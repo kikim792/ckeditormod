@@ -1,6 +1,6 @@
 name = CKEditor Modifier
 description = Modifies ckeditor editor settings and dialogs.
 core = 7.x
-version = 7.x-1.0-alpha1
+version = 7.x-1.0-alpha2
 scripts[] = ckeditormod.js
 configure = admin/config/content/ckeditormod

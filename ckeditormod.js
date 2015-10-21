@@ -1,7 +1,7 @@
 (function ($) {
 $(function() {
 
-  if (CKEDITOR) {
+  if (typeof CKEDITOR !== 'undefined') {
     CKEDITOR.on('dialogDefinition', function(ev) {
       var settings = Drupal.settings.ckeditormod;
       var dialogName = ev.data.name;
