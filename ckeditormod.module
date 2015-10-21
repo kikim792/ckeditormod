@@ -1,0 +1,86 @@
+<?php
+/**
+ * @file
+ * Code for the ckeditormod module.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function ckeditormod_menu() {
+  $items = array();
+
+  $items['admin/config/content/ckeditormod'] = array(
+    'title' => 'CKEditor Modifier',
+    'description' => 'Modifies CKEditor settings and dialogs.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ckeditormod_settings_form'),
+    'access arguments' => array('administer filters'),
+    'file' => 'ckeditormod.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_page_build().
+ */
+function ckeditormod_page_build(&$page) {
+  if (_ckeditormod_ckeditor_exists()) {
+    $setting = array(
+      'link_hide_advanced' => variable_get('ckemod_link_hide_advanced', TRUE),
+      'link_button_label'  => variable_get('ckemod_link_button_label', 'Display link as a button'),
+      'link_button_types'  => _ckeditormod_parse_button_types(),
+    );
+
+    drupal_add_js(array('ckeditormod' => $setting), 'setting');
+  }
+  else {
+    if (user_access('administer filters')) {
+      drupal_set_message(t('CKEditor not found. !disable ckeditormod module.', array('!disable' => l('Disable', 'admin/modules'))), 'warning');
+    }
+  }
+}
+
+/**
+ * Parse user input for button types into array.
+ */
+function _ckeditormod_parse_button_types() {
+  $types = variable_get('ckemod_link_button_types', _ckeditormod_link_button_types_default());
+  
+  $output = array();
+  foreach (explode("\n", $types) as $line) {
+    list($label, $value) = explode(':', $line);
+    $label = trim($label);
+    $value = trim($value);
+
+    $output[] = array($label, $value);
+  }
+
+  return $output;
+}
+
+/**
+ * Provide default value for button types.
+ */
+function _ckeditormod_link_button_types_default() {
+  return <<<DEFAULT
+- Not button -:
+Default Button: btn btn-default
+Primary Button: btn btn-primary
+Success Button: btn btn-success
+Info Button: btn btn-info
+Warning Button: btn btn-warning
+Danger Button: btn btn-danger
+DEFAULT;
+}
+
+/**
+ * Quickly check -- since this code runs in hook_page_build -- if ckeditor or
+ * wysiwyg module is enabled. Does not check in detail whether wysiwyg uses
+ * ckeditor library.
+ */
+function _ckeditormod_ckeditor_exists() {
+  return module_exists('ckeditor') or module_exists('wysiwyg');
+}
