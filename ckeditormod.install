@@ -8,4 +8,5 @@
 function ckeditormod_uninstall() {
   variable_del('ckemod_link_hide_advanced');
   variable_del('ckemod_link_button_types');
+  variable_del('ckemod_link_button_label');
 }
